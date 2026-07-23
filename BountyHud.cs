@@ -50,7 +50,11 @@ namespace EndlessBounty
                 DrawToggleToast();
             }
 
-            if (!_settings.Enabled.Value || !_settings.ShowHud.Value || _tracker.SessionKills == 0)
+            // SessionKills alone would keep the HUD hidden for the whole
+            // Patch 1.1 Siege Wave (siege kills don't feed BountyMobs), so
+            // also show once the siege itself is confirmed active.
+            bool everRelevant = _tracker.SessionKills > 0 || MatchObjective.IsFinalBossSiege || _tracker.TimeInFinalWave > 0f;
+            if (!_settings.Enabled.Value || !_settings.ShowHud.Value || !everRelevant)
             {
                 return;
             }

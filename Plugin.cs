@@ -9,7 +9,7 @@ namespace EndlessBounty
     {
         public const string PluginGuid = "com.community.sineusarena.endlessbounty";
         public const string PluginName = "Endless Bounty";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "1.0.1";
 
         private const string GithubOwner = "maanu113";
         private const string GithubRepo = "EndlessBounty";
