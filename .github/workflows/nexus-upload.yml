@@ -1,34 +1,25 @@
 name: Publish to Nexus Mods
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
+  release:
+    types: [published]
 
 jobs:
   upload:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-
-      - name: Derive version from tag
+      - name: Derive version from release tag
         id: ver
         run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
-      - name: Build release DLL
-        run: dotnet build -c Release
-
-      - name: Package mod zip
+      - name: Download release asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p package/BepInEx/plugins/EndlessBounty
-          cp bin/Release/net472/EndlessBounty.dll package/BepInEx/plugins/EndlessBounty/
-          cp lib/SineusModding.Api.dll package/BepInEx/plugins/
-          cd package && zip -r ../EndlessBounty-${{ steps.ver.outputs.version }}.zip .
+          gh release download "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "*.zip" \
+            --output "EndlessBounty-${{ steps.ver.outputs.version }}.zip"
 
       - name: Upload to Nexus Mods
         uses: Nexus-Mods/upload-action@v1.0.0-beta.9
